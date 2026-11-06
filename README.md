@@ -1,108 +1,137 @@
 <div align="center">
 
-# Rentify
+# 🏠 Rentify
 
-**A full-stack rental management ecosystem for landlords and tenants.**
+### Rental management, connected from end to end
 
-From identity and tenancy to web/mobile apps, API contracts, and infrastructure, Rentify is built as a multi-repo platform for real-world product development.
+**A multi-repository platform that helps landlords and tenants manage the rental journey—from identity and property setup to contracts, billing, and mobile experiences.**
+
+[Repositories](#-repository-map) · [Architecture](#-architecture-at-a-glance) · [Getting started](#-getting-started) · [Contributing](#-contributing)
 
 </div>
 
 ---
 
-## ✨ What is Rentify?
+## 📖 About
 
-Rentify helps rental businesses and room owners manage the full lifecycle of a rental operation:
+Rentify is an academic product ecosystem developed in the context of **PBL6**. It brings together backend services, web and mobile clients, shared API contracts, and deployment infrastructure in a coordinated multi-repository project.
 
-- User identity and authentication
-- Building/room management
-- Contract and billing workflows
-- Landlord web operations
-- Tenant + landlord mobile experience
-- API-first collaboration across teams
+The platform is designed around clear domain boundaries. Each service or client has its own responsibility, while the shared OpenAPI contract helps teams coordinate changes across the system.
 
-The project is organized as a microservice-friendly ecosystem with clear boundaries between domain services, frontend clients, and deployment infrastructure.
+> **This repository is the organization-level overview.** See the individual repositories for implementation details, setup instructions, and contribution guidelines.
 
----
+## ✨ What Rentify supports
 
-## 🧩 Repository Map (10 main repos)
+- **Identity and access** — account management, authentication, landlord profiles, and token issuing.
+- **Property operations** — buildings, rooms, and Vietnam administrative units.
+- **Rental workflows** — a foundation for contract and billing flows.
+- **Landlord web experience** — browser-based tools for managing rental operations.
+- **Mobile experience** — native Android apps for landlords and tenants.
+- **Service integration** — API gateway routing and shared contracts across clients and services.
+- **Deployment** — container-based deployment setup for AWS EC2 environments.
 
-| Repository | Purpose |
+## 🧩 Repository map
+
+| Repository | Role |
 |---|---|
-| [`api-gateway`](https://github.com/pbl6-home-renter/api-gateway) | Single entry point: routing, JWT/JWKS auth, CORS, rate limiting, correlation IDs. |
-| [`Identity-Service`](https://github.com/pbl6-home-renter/Identity-Service) | Authentication and identity domain: accounts, users, landlord profile, token issuing. |
+| [`api-gateway`](https://github.com/pbl6-home-renter/api-gateway) | Platform entry point for routing, JWT/JWKS authentication, CORS, rate limiting, and correlation IDs. |
+| [`Identity-Service`](https://github.com/pbl6-home-renter/Identity-Service) | Identity domain: accounts, users, landlord profiles, and token issuing. |
 | [`Tenancy-Service`](https://github.com/pbl6-home-renter/Tenancy-Service) | Tenancy domain: buildings, rooms, and Vietnam administrative units. |
-| [`community-service`](https://github.com/pbl6-home-renter/community-service) | Community domain foundation (chat/notification track and service-level integrations). |
-| [`fe`](https://github.com/pbl6-home-renter/fe) | Landlord web app (React + TypeScript + Vite). |
-| [`mobile`](https://github.com/pbl6-home-renter/mobile) | Native Android apps for landlord and tenant (Kotlin, multi-module). |
-| [`api-doc`](https://github.com/pbl6-home-renter/api-doc) | Canonical OpenAPI contract shared across backend, web, and mobile. |
-| [`infra`](https://github.com/pbl6-home-renter/infra) | Deployment setup (Docker Compose + Caddy) for AWS EC2 environments. |
-| [`boilerplate`](https://github.com/pbl6-home-renter/boilerplate) | Backend template (NestJS, Clean Architecture, DDD, CQRS) used to bootstrap services. |
-| [`docs`](https://github.com/pbl6-home-renter/docs) | Product/PM documentation by phases (requirements, plans, decisions, issue breakdown). |
+| [`community-service`](https://github.com/pbl6-home-renter/community-service) | Community foundation for chat, notifications, and service-level integrations. |
+| [`fe`](https://github.com/pbl6-home-renter/fe) | Landlord web application built with React, TypeScript, and Vite. |
+| [`mobile`](https://github.com/pbl6-home-renter/mobile) | Native Android applications for landlords and tenants, built with Kotlin and a multi-module structure. |
+| [`api-doc`](https://github.com/pbl6-home-renter/api-doc) | Shared OpenAPI contract for backend services, web, and mobile clients. |
+| [`infra`](https://github.com/pbl6-home-renter/infra) | Deployment configuration using Docker Compose and Caddy for AWS EC2 environments. |
+| [`boilerplate`](https://github.com/pbl6-home-renter/boilerplate) | NestJS backend starter using Clean Architecture, DDD, and CQRS patterns. |
+| [`docs`](https://github.com/pbl6-home-renter/docs) | Product and project documentation, organized by phases: requirements, plans, decisions, and issue breakdowns. |
 
-> This `.github` repository is used for organization-level metadata and shared collaboration context.
-
----
-
-## 🏗️ High-level Architecture
+## 🏗️ Architecture at a glance
 
 ```text
-Clients (fe, mobile)
-        |
-        v
-   API Gateway
-        |
-        +--> Identity-Service
-        +--> Tenancy-Service
-        +--> community-service
-        |
-   Shared contract: api-doc (OpenAPI)
-        |
-Deployment & ops: infra
+┌───────────────────────┐       ┌───────────────────────┐
+│      Landlord Web     │       │ Landlord & Tenant App │
+│      React + Vite     │       │     Android / Kotlin  │
+└───────────┬───────────┘       └───────────┬───────────┘
+            │                               │
+            └───────────────┬───────────────┘
+                            ▼
+                  ┌───────────────────┐
+                  │    API Gateway    │
+                  │ Auth, routing,    │
+                  │ rate limits, etc. │
+                  └─────────┬─────────┘
+                            │
+              ┌─────────────┼─────────────┐
+              ▼             ▼             ▼
+       ┌────────────┐ ┌────────────┐ ┌──────────────┐
+       │  Identity  │ │  Tenancy   │ │  Community   │
+       │  Service   │ │  Service   │ │   Service    │
+       └────────────┘ └────────────┘ └──────────────┘
+
+          Shared API contract: api-doc (OpenAPI)
+          Deployment and operations: infra
 ```
 
-### Design principles
+### 🧭 Design principles
 
-- **API-first collaboration**: define/lock contracts in `api-doc`.
-- **Domain separation**: each service owns a clear business boundary.
-- **Reusable backend patterns**: bootstrap from `boilerplate`.
-- **Multi-client consistency**: web and mobile consume the same API contract.
+- **API-first collaboration** — coordinate API changes through `api-doc`.
+- **Clear domain ownership** — services own their respective business areas.
+- **Consistent client integration** — web and mobile use the shared API contract.
+- **Reusable backend foundations** — bootstrap services from `boilerplate`.
+- **Independent repositories** — teams can work within focused codebases and deliver scoped changes.
 
----
+## 🛠️ Technology overview
 
-## 🚀 Why this project is interesting
+| Area | Technologies |
+|---|---|
+| Landlord web | React, TypeScript, Vite |
+| Android apps | Kotlin, multi-module architecture |
+| Identity and gateway | JWT/JWKS-based authentication; see each repository for its implementation stack |
+| Backend foundation | NestJS, Clean Architecture, DDD, CQRS |
+| API contract | OpenAPI |
+| Deployment | Docker Compose, Caddy, AWS EC2 |
 
-- Covers both **product** and **engineering** layers end-to-end.
-- Demonstrates a realistic **multi-repo teamwork model**.
-- Balances delivery speed with maintainable architecture.
-- Suitable for learning modern backend/frontend/mobile integration in one ecosystem.
+> Technology details can vary by repository. Check that repository’s README for its current stack and setup.
 
----
+## 🚀 Getting started
 
-## 💡 Next ideas / roadmap
+Rentify is split across repositories, so there is no single root application to install. A practical onboarding path is:
 
-Potential directions to make Rentify even stronger:
+1. **Read [`docs`](https://github.com/pbl6-home-renter/docs)** to understand the product phases, scope, and decisions.
+2. **Review [`api-doc`](https://github.com/pbl6-home-renter/api-doc)** to learn about the shared API contract.
+3. **Choose a repository** based on the area you want to work on.
+4. **Follow that repository’s README** for prerequisites, configuration, and local development steps.
+5. **Check [`infra`](https://github.com/pbl6-home-renter/infra)** for deployment setup and environment-specific guidance.
 
-1. **Public architecture portal**: diagrams + service ownership + onboarding paths.
-2. **Unified release notes** across repos (changelog automation).
-3. **Cross-repo CI quality gates** for API compatibility checks.
-4. **Observability baseline**: tracing, metrics dashboards, error budgets.
-5. **Security hardening**: secret scanning policies + dependency risk gates.
-6. **Developer experience**: one-command local dev bootstrap for all services.
+## 🗺️ Roadmap ideas
 
----
+These are potential directions for the ecosystem, not commitments or a release schedule:
 
-## 🤝 Contribution mindset
+- **Architecture portal** — publish diagrams, service ownership, and onboarding paths.
+- **Unified release notes** — collect changes across repositories into one changelog.
+- **API compatibility checks** — catch breaking contract changes in CI.
+- **Observability baseline** — establish tracing, metrics, dashboards, and service health signals.
+- **Security checks** — add secret scanning and dependency risk checks across repositories.
+- **Local development bootstrap** — make it easier to start the services needed for a development task.
 
-If you want to contribute, start with:
+## 🤝 Contributing
 
-1. Reading `docs` to understand phase goals and scope.
-2. Checking `api-doc` before implementing API changes.
-3. Following service/app conventions in each repository.
-4. Opening focused PRs with clear scope per repo.
+Contributions are welcome. To keep work coordinated across repositories:
 
----
+1. Read the relevant phase and scope documentation in [`docs`](https://github.com/pbl6-home-renter/docs).
+2. Check [`api-doc`](https://github.com/pbl6-home-renter/api-doc) before changing or consuming an API.
+3. Follow the conventions and setup instructions in the repository you are changing.
+4. Keep pull requests focused, with a clear description of their scope and impact.
+5. Coordinate cross-repository changes with the teams responsible for the affected components.
 
 ## 📌 Project status
 
-Rentify is an actively evolving academic-product ecosystem (PBL6 context) with production-style architecture and delivery practices.
+Rentify is an **actively evolving academic product ecosystem** built in the PBL6 context. Its repositories demonstrate a production-style approach to service boundaries, client integration, API collaboration, and deployment.
+
+---
+
+<div align="center">
+
+**Built as a connected product ecosystem, one focused repository at a time.**
+
+</div>
